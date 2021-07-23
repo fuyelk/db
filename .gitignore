@@ -1,0 +1,7 @@
+/vendor/
+/composer.lock
+/demo/temp/*
+/src/Config.php
+.idea
+!.gitignore
+!.gitkeep

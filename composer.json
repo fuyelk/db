@@ -1,0 +1,20 @@
+{
+    "name": "fuyelk/db",
+    "description": "数据库操作助手",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "fuyelk",
+            "email": "fuyelk@fuyelk.com"
+        }
+    ],
+    "require": {
+        "ext-pdo": "*"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "fuyelk\\db\\" : "src/"
+        }
+    }
+}
