@@ -6,7 +6,7 @@ use PDO;
 use PDOException;
 
 /**
- * Class Db
+ * Class Database
  * @package fuyelk\db
  * @author fuyelk <fuyelk@fuyelk.com>
  */
@@ -497,7 +497,6 @@ class Database
      * @return int
      * @throws DbException
      * @author fuyelk <fuyelk@fuyelk.com>
-     * @date 2021/07/23 19:17
      */
     public function insertGetID(array $data)
     {
@@ -544,7 +543,6 @@ class Database
      * @return bool
      * @throws DbException
      * @author fuyelk <fuyelk@fuyelk.com>
-     * @date 2021/07/23 19:30
      */
     public function update(array $data)
     {

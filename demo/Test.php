@@ -9,7 +9,7 @@ use fuyelk\db\DbException;
 use fuyelk\db\Db;
 
 Db::setConfig([
-    'database' => 'fastadmin',
+    'database' => 'test',
     'username' => 'root',
     'password' => 'root',
     'prefix' => 'tb_'
@@ -25,22 +25,27 @@ $where = [
     'wechat' => ['is', null],
 ];
 
-$buildSql = Db::name('box')
-    ->field('id,box_name name')
-    ->field('create_time')
-    ->where($where)
-    ->where('level', '>', 8)
-    ->where('delete_time', null)
-    ->where('gender', '男')
-    ->where('wechat', 'is', null)
-    ->order('id desc')
-    ->order('create_time desc')
-    ->buildSql(); // SELECT id,box_name name,create_time FROM tb_box WHERE  `level` > 8 AND `mobile` IS null AND `gender` = '男' AND `wechat` is null AND `delete_time` IS null AND `wechat` IS null ORDER BY id desc,create_time desc
+try {
+    $buildSql = Db::name('box')
+        ->field('id,box_name name')
+        ->field('create_time')
+        ->where($where)
+        ->where('level', '>', 8)
+        ->where('delete_time', null)
+        ->where('gender', '男')
+        ->where('wechat', 'is', null)
+        ->order('id desc')
+        ->order('create_time desc')
+        ->buildSql(); // SELECT id,box_name name,create_time FROM tb_box WHERE  `level` > 8 AND `mobile` IS null AND `gender` = '男' AND `wechat` is null AND `delete_time` IS null AND `wechat` IS null ORDER BY id desc,create_time desc
 //        ->paginate(2,2);
 //        ->select();
 //        ->find();
 //        ->value('update_time');
 //        ->column('update_time,create_time','');
+}catch (DbException $e) {
+    var_dump($e->getMessage());
+    exit();
+}
 
 var_dump(['buildSql' => $buildSql]);
 
