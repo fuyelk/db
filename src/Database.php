@@ -132,7 +132,7 @@ class Database
      * @return $this
      * @author fuyelk <fuyelk@fuyelk.com>
      */
-    public function limit($start, $length = null)
+    public function limit(int $start, int $length = null)
     {
         if (is_null($length)) {
             $this->limit = $start;
@@ -282,7 +282,7 @@ class Database
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
         } catch (PDOException $e) {
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
@@ -316,7 +316,7 @@ class Database
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
         } catch (PDOException $e) {
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
@@ -328,7 +328,7 @@ class Database
      * @throws DbException
      * @author fuyelk <fuyelk@fuyelk.com>
      */
-    public function value($field = '')
+    public function value(string $field = '')
     {
         if (empty($this->field)) {
             $this->field = trim($field);
@@ -337,7 +337,7 @@ class Database
         try {
             $value = $this->find();
         } catch (DbException $e) {
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
 
         if (empty($value)) return null;
@@ -370,7 +370,7 @@ class Database
         try {
             $value = $this->select();
         } catch (DbException $e) {
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
 
         if (empty($value)) return null;
@@ -439,7 +439,7 @@ class Database
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
         } catch (PDOException $e) {
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
@@ -485,8 +485,8 @@ class Database
                 $this->pdo->exec($item);
                 $count++;
             }
-        } catch (\Exception $e) {
-            throw new DbException($e->getMessage());
+        } catch (PDOException $e) {
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
         return $count;
     }
@@ -532,7 +532,7 @@ class Database
                 $res = $this->pdo->lastInsertId();
             }
         } catch (\Exception $e) {
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
         return intval($res);
     }
@@ -569,8 +569,8 @@ class Database
         try {
             $sql = "update {$this->table} set {$updateSql} where {$this->where}";
             $res = $this->pdo->exec($sql);
-        } catch (\Exception $e) {
-            throw new DbException($e->getMessage());
+        } catch (PDOException $e) {
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
         return $res;
     }
@@ -590,8 +590,8 @@ class Database
         try {
             $sql = "delete from {$this->table}  where {$this->where}";
             $res = $this->pdo->exec($sql);
-        } catch (\Exception $e) {
-            throw new DbException($e->getMessage());
+        } catch (PDOException $e) {
+            throw new PDOException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
         return $res;
     }
@@ -608,7 +608,7 @@ class Database
         try {
             $res = $this->pdo->query($query);
         } catch (PDOException $e) {
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
         return $res;
     }
@@ -622,8 +622,8 @@ class Database
     {
         try {
             $this->pdo->beginTransaction();
-        } catch (\Exception $e) {
-            throw new DbException($e->getMessage());
+        } catch (PDOException $e) {
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
     }
 
@@ -636,8 +636,8 @@ class Database
     {
         try {
             $this->pdo->commit();
-        } catch (\Exception $e) {
-            throw new DbException($e->getMessage());
+        } catch (PDOException $e) {
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
     }
 
@@ -651,7 +651,7 @@ class Database
         try {
             $this->pdo->rollBack();
         } catch (PDOException $e) {
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
     }
 
@@ -664,7 +664,7 @@ class Database
      * @author fuyelk <fuyelk@fuyelk.com>
      * @date 2021/3/18 13:23
      */
-    private function strMerge($str1, $str2, $delimiter = ',')
+    private function strMerge(string $str1, string $str2, string $delimiter = ',')
     {
         $arrStr = $str1 ? explode($delimiter, trim($str1, $delimiter)) : [];
         $arrStr = array_unique($arrStr);
@@ -674,5 +674,54 @@ class Database
             $arrStr = array_unique(array_merge($arrStr, $arrStr2));
         }
         return trim(implode($delimiter, $arrStr), $delimiter);
+    }
+
+    /**
+     * 写日志
+     * @param mixed $log 日志内容
+     * @param string $name 数据说明
+     * @return string 日志唯一标识
+     */
+    public static function writeLog($log, string $name = '')
+    {
+        $debug = debug_backtrace();
+        $log = is_object($log) ? (array)$log : $log;
+        $log_id = uniqid();
+        $logFile = dirname(__DIR__) . '/log/' . date('Ym') . '/' . date('d') . '.log';
+        if (!is_dir(dirname($logFile))) mkdir(dirname($logFile), 0755, true);
+
+        $msg = "============ [$log_id] 日志开始 ============" . PHP_EOL;;
+        $msg .= '[ file ] ' . $debug[0]['file'] . ':' . $debug[0]['line'] . PHP_EOL;
+        $msg .= '[ time ] ' . date('Y-m-d H:i:s') . PHP_EOL;
+        $msg .= '[ name ] ' . $name . PHP_EOL;
+        $msg .= '[ data ] ' . (is_array($log) ? var_export($log, true) : $log) . PHP_EOL;
+        $fp = @fopen($logFile, 'a');
+        fwrite($fp, $msg);
+        fclose($fp);
+        return date('Ymd') . $log_id;
+    }
+
+    /**
+     * 获取日志
+     * @param string $logid 日志ID
+     * @return bool|false|string
+     * @author fuyelk <fuyelk@fuyelk.com>
+     */
+    public static function getLog(string $logid)
+    {
+        if (empty($logid)) return false;
+
+        $logFile = dirname(__DIR__) . '/log/' . mb_substr($logid, 0, 6) . '/' . mb_substr($logid, 6, 2) . '.log';
+        if (!is_file($logFile)) return false;
+
+        $content = file_get_contents($logFile);
+        $logName = mb_substr($logid, 8);
+        $tag = "============ [$logName] 日志开始 ============";
+        $startIndex = mb_strpos($content, $tag);
+        $content = mb_substr($content, $startIndex);
+        $endIndex = mb_strpos($content, '============ [', 10);
+
+        if (false === $endIndex) return $content;
+        return mb_substr($content, 0, $endIndex);
     }
 }

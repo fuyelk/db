@@ -27,6 +27,8 @@ use fuyelk\db\Database;
  * @method Database startTrans() static 启动事务
  * @method Database commit() static 提交事务
  * @method Database rollback() static 事务回滚
+ * @method Database writeLog($log, string $name = '') static 写日志
+ * @method Database getLog(string $logid) static 获取日志
  * @author fuyelk <fuyelk@fuyelk.com>
  */
 class Db
@@ -44,7 +46,7 @@ class Db
 
     /**
      * 设置数据库信息
-     * @param array $config
+     * @param array $config ['type','host','database','aausernamea','password','port','prefix']
      * @author fuyelk <fuyelk@fuyelk.com>
      */
     public static function setConfig(array $config)
@@ -54,12 +56,20 @@ class Db
 
     /**
      * 获取数据库配置
+     * @param string $name 配置名
+     * @return array|mixed|null
      * @throws DbException
      * @author fuyelk <fuyelk@fuyelk.com>
      */
-    private static function getConfig()
+    public static function getConfig(string $name = '')
     {
         if (!empty(self::$config)) {
+            if ($name) {
+                if (!array_key_exists($name, self::$config)) {
+                    return null;
+                }
+                return self::$config[$name];
+            }
             return self::$config;
         }
 
@@ -89,6 +99,13 @@ return [
 ];";
             file_put_contents($configPath, $configContent);
             throw new DbException('数据库未配置');
+        }
+
+        if ($name) {
+            if (!array_key_exists($name, self::$config)) {
+                return null;
+            }
+            return self::$config[$name];
         }
         return require_once $configPath;
     }
