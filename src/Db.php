@@ -46,7 +46,7 @@ class Db
 
     /**
      * 设置数据库信息
-     * @param array $config ['type','host','database','aausernamea','password','port','prefix']
+     * @param array $config ['type','host','database','username','password','port','prefix']
      * @author fuyelk <fuyelk@fuyelk.com>
      */
     public static function setConfig(array $config)
