@@ -35,7 +35,7 @@ class DbException extends Exception
             $this->sql_error_code = strval($errorInfo[1] ?? '');
             $this->sql_error_message = strval($errorInfo[2] ?? '');
         }
-        parent::__construct($message, $code);
+        parent::__construct($message, $this->sql_error_code);
     }
 
     /**

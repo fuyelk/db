@@ -334,11 +334,7 @@ class Database
             $this->field = trim($field);
         }
 
-        try {
-            $value = $this->find();
-        } catch (DbException $e) {
-            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
-        }
+        $value = $this->find();
 
         if (empty($value)) return null;
 
@@ -367,11 +363,7 @@ class Database
             $this->field .= ',' . $key;
         }
 
-        try {
-            $value = $this->select();
-        } catch (DbException $e) {
-            throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
-        }
+        $value = $this->select();
 
         if (empty($value)) return null;
 
