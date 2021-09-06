@@ -249,6 +249,8 @@ class Database
             $sql .= " LIMIT {$this->limit}";
         }
 
+        $this->destroyQuery();
+
         return $sql;
     }
 
@@ -284,6 +286,9 @@ class Database
         } catch (PDOException $e) {
             throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
+
+        $this->destroyQuery();
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -318,6 +323,9 @@ class Database
         } catch (PDOException $e) {
             throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
+
+        $this->destroyQuery();
+
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
@@ -433,6 +441,9 @@ class Database
         } catch (PDOException $e) {
             throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
+
+        $this->destroyQuery();
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -480,6 +491,9 @@ class Database
         } catch (PDOException $e) {
             throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
+
+        $this->destroyQuery();
+
         return $count;
     }
 
@@ -526,6 +540,9 @@ class Database
         } catch (\Exception $e) {
             throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
+
+        $this->destroyQuery();
+
         return intval($res);
     }
 
@@ -564,6 +581,9 @@ class Database
         } catch (PDOException $e) {
             throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
+
+        $this->destroyQuery();
+
         return $res;
     }
 
@@ -585,6 +605,9 @@ class Database
         } catch (PDOException $e) {
             throw new PDOException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
+
+        $this->destroyQuery();
+
         return $res;
     }
 
@@ -602,6 +625,9 @@ class Database
         } catch (PDOException $e) {
             throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
+
+        $this->destroyQuery();
+
         return $res;
     }
 
@@ -645,6 +671,18 @@ class Database
         } catch (PDOException $e) {
             throw new DbException($e->getMessage(), $e->getCode(), $e->errorInfo);
         }
+    }
+
+    /**
+     * 清除Query内容
+     * @author fuyelk <fuyelk@fuyelk.com>
+     */
+    private function destroyQuery()
+    {
+        $this->field = '';
+        $this->where = '';
+        $this->limit = null;
+        $this->order = '';
     }
 
     /**
