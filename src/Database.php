@@ -67,7 +67,7 @@ class Database
 
     /**
      * 构造函数
-     * @param array $config
+     * @param array $config ['type','host','database','username','password','port','charset','prefix']
      * @throws DbException
      */
     public function __construct(array $config = [])

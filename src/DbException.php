@@ -31,9 +31,9 @@ class DbException extends Exception
     public function __construct($message = "", $code = 0, array $errorInfo = [])
     {
         if (!empty($errorInfo)) {
-            $this->pdo_error_code = strval($errorInfo[0] ?? '');
-            $this->sql_error_code = strval($errorInfo[1] ?? '');
-            $this->sql_error_message = strval($errorInfo[2] ?? '');
+            $this->pdo_error_code = intval($errorInfo[0] ?? 0);
+            $this->sql_error_code = intval($errorInfo[1] ?? 0);
+            $this->sql_error_message = intval($errorInfo[2] ?? 0);
         }
         parent::__construct($message, $this->sql_error_code);
     }
