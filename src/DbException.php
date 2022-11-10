@@ -15,7 +15,7 @@ class DbException extends Exception
     /**
      * @var string SQL异常代码
      */
-    private $sql_error_code = '';
+    private $sql_error_code = 0;
 
     /**
      * @var string SQL异常信息
