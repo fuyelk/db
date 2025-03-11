@@ -28,7 +28,7 @@ class DbException extends Exception
      * @param int $code 异常代码
      * @param array $errorInfo 异常信息
      */
-    public function __construct($message = "", $code = 0, array $errorInfo = [])
+    public function __construct($message = "", $code = 0, ?array $errorInfo = [])
     {
         if (!empty($errorInfo)) {
             $this->pdo_error_code = intval($errorInfo[0] ?? 0);
